@@ -44,7 +44,7 @@ write_files:
 - content: |
     apiVersion: management.cattle.io/v3
     glesysConfig:
-      apiKey: {{params.apiKey}}
+      apiKey: {{params.apikey}}
       bandwidth: "100"
       campaignCode: ""
       cpu: "2"
