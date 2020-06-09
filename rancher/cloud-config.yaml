@@ -1,4 +1,6 @@
 ## template:glesys
+# Licensed under the CC0 1.0
+
 {{> users}}
 
 packages:
