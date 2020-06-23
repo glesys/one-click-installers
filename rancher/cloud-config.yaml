@@ -7,4 +7,4 @@
 runcmd:
   - wget https://raw.githubusercontent.com/glesys/one-click-installers/master/rancher/install-rancher.sh
   - chmod +x install-rancher.sh
-  - ./install-rancher.sh {{params.hostname}} {{params.email}} {{params.project}} {{params.apiKey}}
+  - ./install-rancher.sh {{params.hostname}} {{params.email}} {{params.project}} {{params.apikey}}
