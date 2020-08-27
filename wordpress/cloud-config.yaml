@@ -41,7 +41,7 @@ write_files:
         path: /etc/apache2/sites-available/wordpress.conf
     -
         content: |
-            [ wordpress]
+            [wordpress]
             user = www-data
             group = www-data
             listen = /var/run/wordpress.sock
