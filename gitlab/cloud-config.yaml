@@ -1,0 +1,30 @@
+## template:glesys
+#cloud-config
+# Licensed under the CC0 1.0
+
+{{>users}}
+
+packages:
+    - ca-certificates
+    - tzdata
+    - curl
+locale: en_US.UTF-8
+locale_configfile: /etc/default/locale
+runcmd:
+    - 'export LANG=en_US.UTF-8'
+    - 'echo "postfix postfix/mailname        string  $(hostname --fqdn)" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/main_mailer_type        select  Internet Site" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/destinations    string  localhost" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/mynetworks      string  127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/mailbox_limit   string  0" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/recipient_delim string  +" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/protocols       select  all" | sudo debconf-set-selections'
+    - 'apt-get install postfix -y'
+    - 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash'
+    - 'EXTERNAL_URL="https://$(hosntame --fqdn)" apt-get install gitlab-ee'
+    - 'ufw default deny incoming'
+    - 'ufw allow OpenSSH'
+    - 'ufw allow http'
+    - 'ufw allow https'
+    - 'ufw allow 5050'
+    - 'ufw --force enable'
