@@ -42,7 +42,7 @@ write_files:
       ENABLE_HTTP_REDIRECT=1
       ENABLE_LETSENCRYPT=1
       LETSENCRYPT_DOMAIN={{ params.hostname }}
-      LETSENCRYPT_EMAIL={{ params.emailAddress }}
+      LETSENCRYPT_EMAIL={{ params.email }}
       XMPP_DOMAIN=meet.jitsi
       XMPP_SERVER=xmpp.meet.jitsi
       XMPP_BOSH_URL_BASE=http://xmpp.meet.jitsi:5280
