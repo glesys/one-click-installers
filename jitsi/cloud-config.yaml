@@ -1,0 +1,102 @@
+## template: glesys
+# cloud-config
+# Licensed under the CC0 1.0
+
+{{> users }}
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - git
+  - vim
+  - fail2ban
+
+write_files:
+  -
+    path: '/etc/systemd/system/docker-jitsi.service'
+    content: |-
+      [Unit]
+      Description=Docker Compose service for jitsi
+      Requires=docker.service
+      After=docker.service
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      WorkingDirectory=/root/docker-jitsi-meet
+      ExecStart=/usr/bin/docker-compose up -d
+      ExecStop=/usr/bin/docker-compose down
+      TimeoutStartSec=300
+      [Install]
+      WantedBy=multi-user.target
+  -
+    path: '/root/jitsi.env'
+    content: |-
+      CONFIG=~/.jitsi-meet-cfg
+      HTTP_PORT=80
+      HTTPS_PORT=443
+      TZ=Europe/Amsterdam
+      PUBLIC_URL=https://{{ params.hostname }}
+      ENABLE_HTTP_REDIRECT=1
+      ENABLE_LETSENCRYPT=1
+      LETSENCRYPT_DOMAIN={{ params.hostname }}
+      LETSENCRYPT_EMAIL={{ params.email }}
+      XMPP_DOMAIN=meet.jitsi
+      XMPP_SERVER=xmpp.meet.jitsi
+      XMPP_BOSH_URL_BASE=http://xmpp.meet.jitsi:5280
+      XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      XMPP_MUC_DOMAIN=muc.meet.jitsi
+      XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      XMPP_GUEST_DOMAIN=guest.meet.jitsi
+      XMPP_MODULES=
+      XMPP_MUC_MODULES=
+      XMPP_INTERNAL_MUC_MODULES=
+      JVB_BREWERY_MUC=jvbbrewery
+      JVB_AUTH_USER=jvb
+      JVB_AUTH_PASSWORD={{ params.jitsiPassword }}
+      JVB_STUN_SERVERS=stun.l.google.com:19302,stun1.l.google.com:19302,stun2.l.google.com:19302
+      JVB_PORT=10000
+      JVB_TCP_HARVESTER_DISABLED=true
+      JVB_TCP_PORT=4443
+      JICOFO_COMPONENT_SECRET={{ params.jitsiPassword }}
+      JICOFO_AUTH_USER=focus
+      JICOFO_AUTH_PASSWORD={{ params.jitsiPassword }}
+      JIGASI_XMPP_USER=jigasi
+      JIGASI_XMPP_PASSWORD={{ params.jitsiPassword }}
+      JIGASI_BREWERY_MUC=jigasibrewery
+      JIGASI_PORT_MIN=20000
+      JIGASI_PORT_MAX=20050
+      XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
+      JIBRI_RECORDER_USER=recorder
+      JIBRI_RECORDER_PASSWORD={{ params.jitsiPassword }}
+      JIBRI_RECORDING_DIR=/config/recordings
+      JIBRI_FINALIZE_RECORDING_SCRIPT_PATH=/config/finalize.sh
+      JIBRI_XMPP_USER=jibri
+      JIBRI_XMPP_PASSWORD={{ params.jitsiPassword }}
+      JIBRI_BREWERY_MUC=jibribrewery
+      JIBRI_PENDING_TIMEOUT=90
+      JIBRI_STRIP_DOMAIN_JID=muc
+      JIBRI_LOGS_DIR=/config/logs
+
+runcmd:
+    - 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -'
+    - 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"'
+    - 'apt-get update -y'
+    - 'apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose'
+    - 'systemctl start docker'
+    - 'systemctl enable docker'
+    - 'mkdir -p /root/.jitsi-meet-cfg/web /root/.jitsi-meet-cfg/letsencrypt /root/.jitsi-meet-cfg/transcripts /root/.jitsi-meet-cfg/prosody /root/.jitsi-meet-cfg/jicofo /root/.jitsi-meet-cfg/jvb'
+    - 'git clone --branch stable-4416 --depth 1 https://github.com/jitsi/docker-jitsi-meet /root/docker-jitsi-meet'
+    - 'cp /root/jitsi.env /root/docker-jitsi-meet/.env'
+    - '/root/docker-jitsi-meet/gen-passwords.sh'
+    - 'systemctl daemon-reload'
+    - 'systemctl enable docker-jitsi'
+    - 'systemctl start docker-jitsi'
+    - 'ufw default deny incoming'
+    - 'ufw allow OpenSSH'
+    - 'ufw allow http'
+    - 'ufw allow https'
+    - 'ufw allow in 10000:20000/udp'
+    - 'ufw --force enable'
