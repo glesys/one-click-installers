@@ -43,16 +43,15 @@ write_files:
     -
         content: |
             [wordpress]
-            user = www-data
-            group = www-data
+            user = {{users.0.username}}
+            group = {{users.0.username}}
             listen = /var/run/wordpress.sock
             listen.owner = www-data
             listen.group = www-data
-            pm = dynamic
-            pm.max_children = 250
-            pm.start_servers = 15
-            pm.min_spare_servers = 5
-            pm.max_spare_servers = 30
+            pm = ondemand
+            pm.max_children = 50
+            pm.process_idle_timeout = 10s
+            pm.max_requests = 200
             chdir = /
         path: /etc/php/7.4/fpm/pool.d/wordpress.conf
 runcmd:
