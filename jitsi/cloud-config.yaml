@@ -40,6 +40,7 @@ write_files:
       TZ=Europe/Amsterdam
       PUBLIC_URL=https://{{ params.hostname }}
       ENABLE_HTTP_REDIRECT=1
+      ENABLE_XMPP_WEBSOCKET=0
       ENABLE_LETSENCRYPT=1
       LETSENCRYPT_DOMAIN={{ params.hostname }}
       LETSENCRYPT_EMAIL={{ params.email }}
@@ -56,7 +57,7 @@ write_files:
       JVB_BREWERY_MUC=jvbbrewery
       JVB_AUTH_USER=jvb
       JVB_AUTH_PASSWORD={{ params.jitsiPassword | escape.shell }}
-      JVB_STUN_SERVERS=stun.l.google.com:19302,stun1.l.google.com:19302,stun2.l.google.com:19302
+      JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
       JVB_PORT=10000
       JVB_TCP_HARVESTER_DISABLED=true
       JVB_TCP_PORT=4443
@@ -88,7 +89,7 @@ runcmd:
     - 'systemctl start docker'
     - 'systemctl enable docker'
     - 'mkdir -p /root/.jitsi-meet-cfg/web /root/.jitsi-meet-cfg/letsencrypt /root/.jitsi-meet-cfg/transcripts /root/.jitsi-meet-cfg/prosody /root/.jitsi-meet-cfg/jicofo /root/.jitsi-meet-cfg/jvb'
-    - 'git clone --branch stable-4416 --depth 1 https://github.com/jitsi/docker-jitsi-meet /root/docker-jitsi-meet'
+    - 'git clone --branch stable-5390-3 --depth 1 https://github.com/jitsi/docker-jitsi-meet /root/docker-jitsi-meet'
     - 'cp /root/jitsi.env /root/docker-jitsi-meet/.env'
     - '/root/docker-jitsi-meet/gen-passwords.sh'
     - 'systemctl daemon-reload'
