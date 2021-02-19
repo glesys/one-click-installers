@@ -23,8 +23,8 @@ write_files:
             ServerName {{params.hostname}}
             ServerAlias {{#params.hostnames}}{{name}} {{/params.hostnames}}
 
-            DocumentRoot /var/www/html
-                    <Directory /var/www/html>
+            DocumentRoot /home/{{users.0.username}}/web/public
+                    <Directory /home/{{users.0.username}}/web/public>
                             Options -Indexes +FollowSymLinks +MultiViews
                             AllowOverride All
                             Require all granted
@@ -43,16 +43,15 @@ write_files:
     -
         content: |
             [wordpress]
-            user = www-data
-            group = www-data
+            user = {{users.0.username}}
+            group = {{users.0.username}}
             listen = /var/run/wordpress.sock
             listen.owner = www-data
             listen.group = www-data
-            pm = dynamic
-            pm.max_children = 250
-            pm.start_servers = 15
-            pm.min_spare_servers = 5
-            pm.max_spare_servers = 30
+            pm = ondemand
+            pm.max_children = 50
+            pm.process_idle_timeout = 10s
+            pm.max_requests = 200
             chdir = /
         path: /etc/php/7.4/fpm/pool.d/wordpress.conf
 runcmd:
@@ -79,12 +78,10 @@ runcmd:
     - mysql -e "CREATE USER wordpress@localhost IDENTIFIED BY '$PASSWORD';"
     - mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';"
     - mysql -e "FLUSH PRIVILEGES;"
-    - 'usermod --shell /bin/bash www-data'
-    - rm /var/www/html/index.html
-    - 'chown www-data:www-data /var/www/html/'
-    - 'sudo -u www-data -i -- wp core download --path=/var/www/html/ --quiet'
-    - sudo -u www-data -i -- wp config create --path=/var/www/html/ --dbprefix=glesys_ --dbname=wordpress --dbuser=wordpress --dbpass="$PASSWORD"
-    - 'usermod --shell /usr/sbin/nologin www-data'
+    - mkdir -p /home/{{users.0.username}}/web/public
+    - chown -R {{users.0.username}}:{{users.0.username}} -R /home/{{users.0.username}}/web/
+    - 'sudo -u {{users.0.username}} -i -- wp core download --path=/home/{{users.0.username}}/web/public/ --quiet'
+    - sudo -u {{users.0.username}} -i -- wp config create --path=/home/{{users.0.username}}/web/public/ --dbprefix=glesys_ --dbname=wordpress --dbuser=wordpress --dbpass="$PASSWORD"
     - 'ufw default deny incoming'
     - 'ufw allow OpenSSH'
     - 'ufw allow http'
