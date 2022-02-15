@@ -296,6 +296,7 @@ kubectl patch nodedrivers.management.cattle.io -n cattle-system --type merge --p
 kubectl patch nodedrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" azure
 kubectl patch nodedrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" linode
 kubectl patch nodedrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" vmwarevsphere
+kubectl patch nodedrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" harvester
 kubectl patch kontainerdrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" amazonelasticcontainerservice
 kubectl patch kontainerdrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" azurekubernetesservice
 kubectl patch kontainerdrivers.management.cattle.io -n cattle-system --type merge --patch "$(cat /root/disable-driver.yml)" googlekubernetesengine
@@ -304,3 +305,6 @@ kubectl patch kontainerdrivers.management.cattle.io -n cattle-system --type merg
 # Install Glesys node driver and example template
 kubectl apply -f  /root/glesys-node-driver.yml  -n cattle-system
 kubectl apply -f /root/glesys-node-template-kvm.yml
+
+# Display inital admin password
+kubectl -n cattle-system exec $(kubectl -n cattle-system get pods -l app=rancher | grep '1/1' | head -1 | awk '{ print $1 }') -- reset-password
