@@ -3,9 +3,9 @@
 
 set -x
 
-if [ "$#" -ne 4 ]
+if [ "$#" -ne 5 ]
 then
-	echo "Usage $0 <hostname> <email> <clproject> <apikey>"
+	echo "Usage $0 <hostname> <email> <clproject> <apikey> <bootstrappassword>"
 	exit 1
 fi
 
@@ -13,6 +13,7 @@ HOST=$1
 EMAIL=$2
 PROJECT=$3
 APIKEY=$4
+BOOTSTRAPPASSWORD=$5
 
 apt update
 apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
@@ -286,7 +287,8 @@ helm install rancher rancher-stable/rancher \
    --namespace cattle-system \
    --set hostname=$HOST \
    --set ingress.tls.source=letsEncrypt \
-   --set letsEncrypt.email=$EMAIL
+   --set letsEncrypt.email=$EMAIL \
+   --set bootstrapPassword=$BOOTSTRAPPASSWORD
 
 kubectl -n cattle-system rollout status deploy/rancher
 
@@ -305,6 +307,3 @@ kubectl patch kontainerdrivers.management.cattle.io -n cattle-system --type merg
 # Install Glesys node driver and example template
 kubectl apply -f  /root/glesys-node-driver.yml  -n cattle-system
 kubectl apply -f /root/glesys-node-template-kvm.yml
-
-# Display inital admin password
-kubectl -n cattle-system exec $(kubectl -n cattle-system get pods -l app=rancher | grep '1/1' | head -1 | awk '{ print $1 }') -- reset-password
