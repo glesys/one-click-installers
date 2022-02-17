@@ -5,7 +5,7 @@ set -x
 
 if [ "$#" -ne 5 ]
 then
-	echo "Usage $0 <hostname> <email> <clproject> <apikey> <bootstrappassword>"
+	echo "Usage $0 <hostname> <email> <clproject> <apikey> <username>"
 	exit 1
 fi
 
@@ -13,7 +13,7 @@ HOST=$1
 EMAIL=$2
 PROJECT=$3
 APIKEY=$4
-BOOTSTRAPPASSWORD=$5
+USERNAME=$5
 
 apt update
 apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
@@ -269,6 +269,11 @@ rke up --config /root/cluster.yml
 export KUBECONFIG=/root/kube_config_cluster.yml
 export HOME=/root
 
+# Enable config variables for regular user
+cp /root/kube_config_cluster.yml /home/$USERNAME/kube_config_cluster.yml
+chown $USERNAME:$USERNAME /home/$USERNAME/kube_config_cluster.yml
+printf "# Enable kubectl for regular user\nexport KUBECONFIG=/home/$USERNAME/kube_config_cluster.yml" >> /home/$USERNAME/.bashrc
+
 # Install Certmanager
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml
 kubectl create namespace cert-manager
@@ -287,8 +292,7 @@ helm install rancher rancher-stable/rancher \
    --namespace cattle-system \
    --set hostname=$HOST \
    --set ingress.tls.source=letsEncrypt \
-   --set letsEncrypt.email=$EMAIL \
-   --set bootstrapPassword=$BOOTSTRAPPASSWORD
+   --set letsEncrypt.email=$EMAIL
 
 kubectl -n cattle-system rollout status deploy/rancher
 
