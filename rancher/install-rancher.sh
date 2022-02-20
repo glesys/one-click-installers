@@ -257,7 +257,7 @@ mv kubectl /usr/local/bin/
 chmod +x  /usr/local/bin/kubectl
 
 # helm
-wget https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz
+curl -LO https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz
 tar zxvf helm-v3.8.0-linux-amd64.tar.gz
 mv linux-amd64/helm /usr/local/bin/
 chmod +x  /usr/local/bin/helm
