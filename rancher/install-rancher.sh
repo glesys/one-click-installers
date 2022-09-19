@@ -247,18 +247,18 @@ curl https://releases.rancher.com/install-docker/20.10.sh | sh
 ### Download dependency
 
 # rke
-curl -LO https://github.com/rancher/rke/releases/download/v1.3.7/rke_linux-amd64
+curl -LO https://github.com/rancher/rke/releases/download/v1.3.14/rke_linux-amd64
 mv rke_linux-amd64 /usr/local/bin/rke
 chmod +x  /usr/local/bin/rke
 
 # kubectl
-curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.3/bin/linux/amd64/kubectl
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl
 mv kubectl /usr/local/bin/
 chmod +x  /usr/local/bin/kubectl
 
 # helm
-curl -LO https://get.helm.sh/helm-v3.8.0-linux-amd64.tar.gz
-tar zxvf helm-v3.8.0-linux-amd64.tar.gz
+curl -LO https://get.helm.sh/helm-v3.9.4-linux-amd64.tar.gz
+tar zxvf helm-v3.9.4-linux-amd64.tar.gz
 mv linux-amd64/helm /usr/local/bin/
 chmod +x  /usr/local/bin/helm
 
@@ -275,11 +275,11 @@ chown $USERNAME:$USERNAME /home/$USERNAME/kube_config_cluster.yml
 printf "# Enable kubectl for regular user\nexport KUBECONFIG=/home/$USERNAME/kube_config_cluster.yml" >> /home/$USERNAME/.bashrc
 
 # Install Certmanager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.7.1/cert-manager.crds.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.9.1/cert-manager.crds.yaml
 kubectl create namespace cert-manager
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
-helm install   cert-manager jetstack/cert-manager   --namespace cert-manager   --create-namespace  --version v1.7.1
+helm install   cert-manager jetstack/cert-manager   --namespace cert-manager   --create-namespace  --version v1.9.1
 kubectl -n cert-manager rollout status deploy/cert-manager
 
 
@@ -292,7 +292,8 @@ helm install rancher rancher-stable/rancher \
    --namespace cattle-system \
    --set hostname=$HOST \
    --set ingress.tls.source=letsEncrypt \
-   --set letsEncrypt.email=$EMAIL
+   --set letsEncrypt.email=$EMAIL \
+   --set bootstrapPassword="bytlosen123"
 
 kubectl -n cattle-system rollout status deploy/rancher
 
