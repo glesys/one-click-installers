@@ -3,9 +3,9 @@
 
 set -x
 
-if [ "$#" -ne 5 ]
+if [ "$#" -ne 6 ]
 then
-	echo "Usage $0 <hostname> <email> <clproject> <apikey> <username>"
+	echo "Usage $0 <hostname> <email> <clproject> <apikey> <username> <bootstrappassword>"
 	exit 1
 fi
 
@@ -14,6 +14,7 @@ EMAIL=$2
 PROJECT=$3
 APIKEY=$4
 USERNAME=$5
+BOOTSTRAPPASSWORD=$6
 
 apt update
 apt install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common
@@ -293,7 +294,7 @@ helm install rancher rancher-stable/rancher \
    --set hostname=$HOST \
    --set ingress.tls.source=letsEncrypt \
    --set letsEncrypt.email=$EMAIL \
-   --set bootstrapPassword="bytlosen123"
+   --set bootstrapPassword=$BOOTSTRAPPASSWORD
 
 kubectl -n cattle-system rollout status deploy/rancher
 
