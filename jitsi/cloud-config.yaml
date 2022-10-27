@@ -89,7 +89,7 @@ runcmd:
     - 'systemctl start docker'
     - 'systemctl enable docker'
     - 'mkdir -p /root/.jitsi-meet-cfg/web /root/.jitsi-meet-cfg/letsencrypt /root/.jitsi-meet-cfg/transcripts /root/.jitsi-meet-cfg/prosody /root/.jitsi-meet-cfg/jicofo /root/.jitsi-meet-cfg/jvb'
-    - 'git clone --branch stable-5390-3 --depth 1 https://github.com/jitsi/docker-jitsi-meet /root/docker-jitsi-meet'
+    - 'git clone --branch stable-7882 --depth 1 https://github.com/jitsi/docker-jitsi-meet /root/docker-jitsi-meet'
     - 'cp /root/jitsi.env /root/docker-jitsi-meet/.env'
     - '/root/docker-jitsi-meet/gen-passwords.sh'
     - 'systemctl daemon-reload'
