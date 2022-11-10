@@ -11,20 +11,6 @@ packages:
 locale: en_US.UTF-8
 locale_configfile: /etc/default/locale
 runcmd:
-    - 'export LANG=en_US.UTF-8'
-    - 'echo "postfix postfix/mailname        string  $(hostname --fqdn)" | sudo debconf-set-selections'
-    - 'echo "postfix postfix/main_mailer_type        select  Internet Site" | sudo debconf-set-selections'
-    - 'echo "postfix postfix/destinations    string  localhost" | sudo debconf-set-selections'
-    - 'echo "postfix postfix/mynetworks      string  127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128" | sudo debconf-set-selections'
-    - 'echo "postfix postfix/mailbox_limit   string  0" | sudo debconf-set-selections'
-    - 'echo "postfix postfix/recipient_delim string  +" | sudo debconf-set-selections'
-    - 'echo "postfix postfix/protocols       select  all" | sudo debconf-set-selections'
-    - 'apt-get install postfix -y'
-    - 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash'
-    - 'EXTERNAL_URL="https://$(hostname --fqdn)" apt-get install gitlab-ee -y'
-    - 'ufw default deny incoming'
-    - 'ufw allow OpenSSH'
-    - 'ufw allow http'
-    - 'ufw allow https'
-    - 'ufw allow 5050'
-    - 'ufw --force enable'
+  - curl -o install-gitlab.sh https://raw.githubusercontent.com/glesys/one-click-installers/master/gitlab/install-gitlab.sh
+  - chmod +x install-gitlab.sh
+  - ./install-gitlab.sh {{params.bootstrapPassword}}
