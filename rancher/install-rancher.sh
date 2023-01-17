@@ -235,6 +235,96 @@ spec:
   engineInstallURL: https://releases.rancher.com/install-docker/20.10.sh
   engineRegistryMirror: null
   useInternalIpAddress: true
+---
+apiVersion: management.cattle.io/v3
+glesysConfig:
+  apiKey: $APIKEY
+  bandwidth: "100"
+  campaignCode: ""
+  cpu: "2"
+  dataCenter: Oulu
+  memory: "4096"
+  platform: KVM
+  project: $PROJECT
+  rootPassword: ""
+  sshKeyPath: ""
+  storage: "20"
+  template: ubuntu-20-04
+  usernameKvm: docker-machine
+kind: NodeTemplate
+metadata:
+  annotations:
+    ownerBindingsCreated: "false"
+  name: glesys-kvm-oulu-small
+  namespace: cattle-global-nt
+  labels:
+    Datacenter: Oulu
+spec:
+  displayName: KVM Oulu Small (2vCPU, 4GB RAM, 20GB Disk)
+  driver: glesys
+  engineInstallURL: https://releases.rancher.com/install-docker/20.10.sh
+  engineRegistryMirror: null
+  useInternalIpAddress: true
+---
+apiVersion: management.cattle.io/v3
+glesysConfig:
+  apiKey: $APIKEY
+  bandwidth: "100"
+  campaignCode: ""
+  cpu: "4"
+  dataCenter: Oulu
+  memory: "8192"
+  platform: KVM
+  project: $PROJECT
+  rootPassword: ""
+  sshKeyPath: ""
+  storage: "60"
+  template: ubuntu-20-04
+  usernameKvm: docker-machine
+kind: NodeTemplate
+metadata:
+  annotations:
+    ownerBindingsCreated: "false"
+  name: glesys-kvm-oulu-medium
+  namespace: cattle-global-nt
+  labels:
+    Datacenter: Oulu
+spec:
+  displayName: KVM Oulu Medium (4vCPU, 8GB RAM, 60GB Disk)
+  driver: glesys
+  engineInstallURL: https://releases.rancher.com/install-docker/20.10.sh
+  engineRegistryMirror: null
+  useInternalIpAddress: true
+---
+apiVersion: management.cattle.io/v3
+glesysConfig:
+  apiKey: $APIKEY
+  bandwidth: "100"
+  campaignCode: ""
+  cpu: "16"
+  dataCenter: Oulu
+  memory: "32768"
+  platform: KVM
+  project: $PROJECT
+  rootPassword: ""
+  sshKeyPath: ""
+  storage: "150"
+  template: ubuntu-20-04
+  usernameKvm: docker-machine
+kind: NodeTemplate
+metadata:
+  annotations:
+    ownerBindingsCreated: "false"
+  name: glesys-kvm-oulu-large
+  namespace: cattle-global-nt
+  labels:
+    Datacenter: Oulu
+spec:
+  displayName: KVM Oulu Large (16vCPU, 32GB RAM, 150GB Disk)
+  driver: glesys
+  engineInstallURL: https://releases.rancher.com/install-docker/20.10.sh
+  engineRegistryMirror: null
+  useInternalIpAddress: true
 EOF
 
 
