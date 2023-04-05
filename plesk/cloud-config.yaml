@@ -12,5 +12,6 @@ runcmd:
     - chmod 755 /usr/local/bin/plesk-installer
     - /usr/local/bin/plesk-installer install plesk --preset Recommended --with psa-firewall
     - /usr/local/psa/bin/init_conf --init -hostname $(hostname --fqdn) -passwd {{{params.pleskpassword | escape.shell }}} -email {{params.email}} -trial_license true -license_agreed true
+    - /usr/bin/sleep 60
     - /usr/local/psa/bin/modules/firewall/settings -e
     - /usr/local/psa/bin/modules/firewall/settings -c
