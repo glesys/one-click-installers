@@ -12,7 +12,7 @@ runcmd:
     - chmod 755 /usr/local/bin/plesk-installer
     - /usr/local/bin/plesk-installer install plesk --preset Recommended
     - /usr/local/psa/bin/init_conf --init -hostname $(hostname --fqdn) -passwd {{{params.pleskpassword | escape.shell }}} -email {{params.email}} -trial_license true -license_agreed true
-    - /usr/local/bin/plesk-installer add plesk --components psa-firewall 
+    - /usr/local/bin/plesk-installer add plesk --components psa-firewall
     - /usr/local/bin/plesk-installer add plesk --components letsencrypt
     - /usr/local/bin/plesk-installer add plesk --components sslit
     - /usr/sbin/plesk bin extension --exec letsencrypt cli.php --secure-plesk -d $(hostname --fqdn) -w /var/www/vhosts/default/htdocs -m {{params.email}}
