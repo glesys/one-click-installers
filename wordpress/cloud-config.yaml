@@ -6,11 +6,11 @@
 
 packages:
     - apache2
-    - php7.4-fpm
+    - php8.1-fpm
     - curl
-    - php7.4-curl
-    - php7.4-mysql
-    - php7.4-gd
+    - php8.1-curl
+    - php8.1-mysql
+    - php8.1-gd
     - certbot
     - python3-certbot-apache
     - mysql-server
@@ -53,11 +53,11 @@ write_files:
             pm.process_idle_timeout = 10s
             pm.max_requests = 200
             chdir = /
-        path: /etc/php/7.4/fpm/pool.d/wordpress.conf
+        path: /etc/php/8.1/fpm/pool.d/wordpress.conf
 runcmd:
-    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/7.4/fpm/php.ini
-    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/7.4/fpm/php.ini
-    - 'systemctl restart php7.4-fpm'
+    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.1/fpm/php.ini
+    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.1/fpm/php.ini
+    - 'systemctl restart php8.1-fpm'
     - 'a2enmod rewrite headers expires proxy_fcgi proxy_http'
     - 'a2ensite wordpress.conf'
     - 'a2dissite 000-default-conf'
@@ -78,6 +78,7 @@ runcmd:
     - mysql -e "CREATE USER wordpress@localhost IDENTIFIED BY '$PASSWORD';"
     - mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost';"
     - mysql -e "FLUSH PRIVILEGES;"
+    - chmod +x /home/{{users.0.username}}
     - mkdir -p /home/{{users.0.username}}/web/public
     - chown -R {{users.0.username}}:{{users.0.username}} -R /home/{{users.0.username}}/web/
     - 'sudo -u {{users.0.username}} -i -- wp core download --path=/home/{{users.0.username}}/web/public/ --quiet'
