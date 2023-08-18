@@ -19,4 +19,4 @@
 
 ## License
 
-GleSYS one-click installers is open-sourced software licensed under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/deed.en). Separate one-click installers may use other licenses and if so, they should be visible in their `cloud-config.yaml`.
+GleSYS one click installers is open sourced software licensed under the [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/deed.en). Separate one-click installers may use other licenses and if so, they should be visible in their `cloud-config.yaml`.
