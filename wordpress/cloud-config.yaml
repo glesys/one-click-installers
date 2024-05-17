@@ -6,11 +6,11 @@
 
 packages:
     - apache2
-    - php8.1-fpm
+    - php8.3-fpm
     - curl
-    - php8.1-curl
-    - php8.1-mysql
-    - php8.1-gd
+    - php8.3-curl
+    - php8.3-mysql
+    - php8.3-gd
     - certbot
     - python3-certbot-apache
     - mysql-server
@@ -55,9 +55,9 @@ write_files:
             chdir = /
         path: /etc/php/8.1/fpm/pool.d/wordpress.conf
 runcmd:
-    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.1/fpm/php.ini
-    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.1/fpm/php.ini
-    - 'systemctl restart php8.1-fpm'
+    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.3/fpm/php.ini
+    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.3/fpm/php.ini
+    - 'systemctl restart php8.3-fpm'
     - 'a2enmod rewrite headers expires proxy_fcgi proxy_http'
     - 'a2ensite wordpress.conf'
     - 'a2dissite 000-default-conf'
