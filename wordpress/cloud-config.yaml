@@ -53,7 +53,7 @@ write_files:
             pm.process_idle_timeout = 10s
             pm.max_requests = 200
             chdir = /
-        path: /etc/php/8.1/fpm/pool.d/wordpress.conf
+        path: /etc/php/8.3/fpm/pool.d/wordpress.conf
 runcmd:
     - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.3/fpm/php.ini
     - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.3/fpm/php.ini
