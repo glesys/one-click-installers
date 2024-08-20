@@ -4,6 +4,10 @@
 
 {{>users}}
 
+swap:
+  filename: /.swapfile
+  size: 1073741824
+
 packages:
     - apache2
     - php8.3-fpm
