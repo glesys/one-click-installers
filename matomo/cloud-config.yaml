@@ -1,0 +1,93 @@
+## template:glesys
+#cloud-config
+# Licensed under the CC0 1.0
+
+{{>users}}
+
+packages:
+    - apache2
+    - php8.1-fpm
+    - curl
+    - php8.1-curl
+    - php8.1-mysql
+    - php8.1-gd
+    - php8.1-xml
+    - certbot
+    - python3-certbot-apache
+    - mysql-server
+    - fail2ban
+    - automysqlbackup
+    - unzip
+write_files:
+    -
+        content: |
+            <VirtualHost *:80>
+            ServerName {{params.hostname}}
+            ServerAlias {{#params.hostnames}}{{name}} {{/params.hostnames}}
+
+            DocumentRoot /home/{{users.0.username}}/web/matomo
+                    <Directory /home/{{users.0.username}}/web/matomo>
+                            Options -Indexes +FollowSymLinks +MultiViews
+                            AllowOverride All
+                            Require all granted
+
+                            <files xmlrpc.php>
+                                Require all denied
+                            </files>
+
+                            #PHP-FPM Socket
+                            <FilesMatch \.php$>
+                                SetHandler "proxy:unix:/var/run/matomo.sock|fcgi://localhost/"
+                            </FilesMatch>
+                    </Directory>
+            </VirtualHost>
+        path: /etc/apache2/sites-available/matomo.conf
+    -
+        content: |
+            [matomo]
+            user = {{users.0.username}}
+            group = {{users.0.username}}
+            listen = /var/run/matomo.sock
+            listen.owner = www-data
+            listen.group = www-data
+            pm = ondemand
+            pm.max_children = 50
+            pm.process_idle_timeout = 10s
+            pm.max_requests = 200
+            chdir = /
+        path: /etc/php/8.1/fpm/pool.d/matomo.conf
+runcmd:
+    - PASSWORD=`openssl rand -base64 32`
+    - mysql -e "create database matomo;"
+    - mysql -e "CREATE USER matomo@localhost IDENTIFIED BY '$PASSWORD';"
+    - mysql -e "GRANT ALL PRIVILEGES ON matomo.* TO 'matomo'@'localhost';"
+    - mysql -e "FLUSH PRIVILEGES;"
+    - echo "env[\"MATOMO_DATABASE_DBNAME\"] = \"matomo\"" >> /etc/php/8.1/fpm/pool.d/matomo.conf
+    - echo "env[\"MATOMO_DATABASE_HOST\"] = \"127.0.0.1\"" >> /etc/php/8.1/fpm/pool.d/matomo.conf
+    - echo "env[\"MATOMO_DATABASE_USERNAME\"] = \"matomo\"" >> /etc/php/8.1/fpm/pool.d/matomo.conf
+    - echo "env[\"MATOMO_DATABASE_PASSWORD\"] = \"$PASSWORD\"" >> /etc/php/8.1/fpm/pool.d/matomo.conf
+    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.1/fpm/php.ini
+    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.1/fpm/php.ini
+    - 'systemctl restart php8.1-fpm'
+    - 'a2enmod rewrite headers expires proxy_fcgi proxy_http'
+    - 'a2ensite matomo.conf'
+    - 'a2dissite 000-default-conf'
+    - 'systemctl restart apache2'
+    - 'certbot --apache -d {{params.hostname}} {{#params.hostnames}} -d {{name}}{{/params.hostnames}} --agree-tos -m {{params.email}} --no-eff-email --redirect'
+    - 'echo "postfix postfix/mailname        string  $(hostname --fqdn)" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/main_mailer_type        select  Internet Site" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/destinations    string  localhost" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/mynetworks      string  127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/mailbox_limit   string  0" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/recipient_delim string  +" | sudo debconf-set-selections'
+    - 'echo "postfix postfix/protocols       select  all" | sudo debconf-set-selections'
+    - 'apt-get install postfix -y'
+    - chmod +x /home/{{users.0.username}}
+    - mkdir -p /home/{{users.0.username}}/web
+    - wget https://builds.matomo.org/matomo.zip && unzip matomo.zip -d /home/{{users.0.username}}/web/
+    - chown -R {{users.0.username}}:{{users.0.username}} -R /home/{{users.0.username}}/web/
+    - 'ufw default deny incoming'
+    - 'ufw allow OpenSSH'
+    - 'ufw allow http'
+    - 'ufw allow https'
+    - 'ufw --force enable'
