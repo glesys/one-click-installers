@@ -21,6 +21,7 @@ runcmd:
     - 'echo "postfix postfix/protocols       select  all" | sudo debconf-set-selections'
     - 'apt-get install postfix -y'
     - 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash'
+    - "export GITLAB_ROOT_PASSWORD={{ params.gitlabrootpassword | escape.shell }}"
     - 'EXTERNAL_URL="https://$(hostname --fqdn)" apt-get install gitlab-ee -y'
     - 'ufw default deny incoming'
     - 'ufw allow OpenSSH'
