@@ -10,11 +10,15 @@ swap:
 
 packages:
     - apache2
-    - php8.3-fpm
+    - php8.5-fpm
     - curl
-    - php8.3-curl
-    - php8.3-mysql
-    - php8.3-gd
+    - php8.5-curl
+    - php8.5-mysql
+    - php8.5-gd
+    - php8.5-mbstring
+    - php8.5-xml
+    - php8.5-zip
+    - php8.5-intl
     - certbot
     - python3-certbot-apache
     - mysql-server
@@ -57,14 +61,14 @@ write_files:
             pm.process_idle_timeout = 10s
             pm.max_requests = 200
             chdir = /
-        path: /etc/php/8.3/fpm/pool.d/wordpress.conf
+        path: /etc/php/8.5/fpm/pool.d/wordpress.conf
 runcmd:
-    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.3/fpm/php.ini
-    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.3/fpm/php.ini
-    - 'systemctl restart php8.3-fpm'
+    - sed -i 's/post_max_size \= .M/post_max_size \= 50M/g' /etc/php/8.5/fpm/php.ini
+    - sed -i 's/upload_max_filesize \= .M/upload_max_filesize \= 50M/g' /etc/php/8.5/fpm/php.ini
+    - 'systemctl restart php8.5-fpm'
     - 'a2enmod rewrite headers expires proxy_fcgi proxy_http'
     - 'a2ensite wordpress.conf'
-    - 'a2dissite 000-default-conf'
+    - 'a2dissite 000-default'
     - 'systemctl restart apache2'
     - 'certbot --apache -d {{params.hostname}} {{#params.hostnames}} -d {{name}}{{/params.hostnames}} --agree-tos -m {{params.email}} --no-eff-email --redirect'
     - 'echo "postfix postfix/mailname        string  $(hostname --fqdn)" | sudo debconf-set-selections'
@@ -84,7 +88,7 @@ runcmd:
     - mysql -e "FLUSH PRIVILEGES;"
     - chmod +x /home/{{users.0.username}}
     - mkdir -p /home/{{users.0.username}}/web/public
-    - chown -R {{users.0.username}}:{{users.0.username}} -R /home/{{users.0.username}}/web/
+    - chown -R {{users.0.username}}:{{users.0.username}} /home/{{users.0.username}}/web/
     - 'sudo -u {{users.0.username}} -i -- wp core download --path=/home/{{users.0.username}}/web/public/ --quiet'
     - sudo -u {{users.0.username}} -i -- wp config create --path=/home/{{users.0.username}}/web/public/ --dbprefix=glesys_ --dbname=wordpress --dbuser=wordpress --dbpass="$PASSWORD"
     - 'ufw default deny incoming'
